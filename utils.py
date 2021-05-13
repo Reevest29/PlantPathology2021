@@ -3,12 +3,15 @@ import numpy as np
 import csv
 from PIL import Image
 import torch.nn as nn
+from torch.autograd import Variable
 
-def getXSamples(numSamples):
+def getXSamples(numSamples=-1):
     all_files = []
     for (dirpath, dirnames, filenames) in walk("train_images"):
         all_files.extend(filenames)
-    selected_files = np.random.choice(all_files,numSamples)
+    
+    if numSamples == -1: numSamples = len(all_files)
+    selected_files = np.random.choice(all_files,numSamples,replace=False)
 
     reader = csv.DictReader(open('train.csv')) # read all labels from train.csv
     labels = {}
@@ -52,3 +55,45 @@ class Flatten(nn.Module):
     def forward(self, x):
         N, C, H, W = x.size() # read in N, C, H, W
         return x.view(N, -1)  # "flatten" the C * H * W values into a single vector per image
+    
+def train(model, loader, loss_fn, optimizer, num_epochs = 1):
+    for epoch in range(num_epochs):
+        print('Starting epoch %d / %d' % (epoch + 1, num_epochs))
+        model.train()
+        for t, (x, y) in enumerate(loader):
+            print(t)
+            x_var = Variable(x.type(gpu_dtype))
+            y_var = Variable(y.type(gpu_dtype).long())
+
+            scores = model(x_var)
+            
+            loss = loss_fn(scores, y_var)
+            if (t + 1) % print_every == 0:
+                print('t = %d, loss = %.4f' % (t + 1, loss.item()))
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+def check_accuracy(model, loader):
+    if loader.dataset.train:
+        print('Checking accuracy on validation set')
+    else:
+        print('Checking accuracy on test set')   
+    num_correct = 0
+    num_samples = 0
+    model.eval() # Put the model in test mode (the opposite of model.train(), essentially)
+    for x, y in loader:
+        with torch.no_grad():
+            x_var = Variable(x.type(gpu_dtype))
+
+        scores = model(x_var)
+        _, preds = scores.data.cpu().max(1)
+        num_correct += (preds == y).sum()
+        num_samples += preds.size(0)
+    acc = float(num_correct) / num_samples
+    print('Got %d / %d correct (%.2f)' % (num_correct, num_samples, 100 * acc))
+    
+def reset(m):
+    if hasattr(m, 'reset_parameters'):
+        m.reset_parameters()
