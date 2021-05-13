@@ -10,8 +10,10 @@ def getXSamples(numSamples=-1):
     for (dirpath, dirnames, filenames) in walk("train_images"):
         all_files.extend(filenames)
     
-    if numSamples == -1: numSamples = len(all_files)
-    selected_files = np.random.choice(all_files,numSamples,replace=False)
+    if numSamples == -1:
+        selected_files = all_files
+    else:
+        selected_files = np.random.choice(all_files,numSamples,replace=False)
 
     reader = csv.DictReader(open('train.csv')) # read all labels from train.csv
     labels = {}
