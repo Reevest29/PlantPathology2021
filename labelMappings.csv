@@ -1,0 +1,13 @@
+Class,Value
+complex,0
+frog_eye_leaf_spot,1
+frog_eye_leaf_spot complex,2
+healthy,3
+powdery_mildew,4
+powdery_mildew complex,5
+rust,6
+rust complex,7
+rust frog_eye_leaf_spot,8
+scab,9
+scab frog_eye_leaf_spot,10
+scab frog_eye_leaf_spot complex,11
