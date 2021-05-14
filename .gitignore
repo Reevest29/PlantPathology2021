@@ -131,5 +131,5 @@ dmypy.json
 # Pycharm stuff
 .idea/
 
-
-train_images/*
+# Get rid of train folder
+/train_images
