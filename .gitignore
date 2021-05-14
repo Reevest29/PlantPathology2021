@@ -133,3 +133,5 @@ dmypy.json
 
 # Get rid of train folder
 /train_images
+
+.vscode/
