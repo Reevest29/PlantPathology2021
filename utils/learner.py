@@ -30,7 +30,7 @@ def train(model, training_data, loss_fn, optimizer, dtype = torch.FloatTensor, n
             loss.backward()
             optimizer.step()
 
-def check_accuracy(model, loader,dtype = torch.FloatTensor,train = True):
+def check_accuracy(model, loader, dtype = torch.FloatTensor, train = True):
     if train:
         print('Checking accuracy on validation set')
     else:
