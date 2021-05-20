@@ -38,6 +38,7 @@ def check_accuracy(model, loader, dtype = torch.FloatTensor, train = True):
     num_correct = 0
     num_samples = 0
     model.eval() # Put the model in test mode (the opposite of model.train(), essentially)
+    all_preds = []
     for x, y in loader:
         with torch.no_grad():
             x_var = Variable(x.type(dtype))
@@ -46,9 +47,10 @@ def check_accuracy(model, loader, dtype = torch.FloatTensor, train = True):
         _, preds = scores.data.cpu().max(1)
         num_correct += (preds == y).sum()
         num_samples += preds.size(0)
+        all_preds.extend(np.array(x))
     acc = float(num_correct) / num_samples
     print('Got %d / %d correct (%.2f)' % (num_correct, num_samples, 100 * acc))
-    return acc
+    return acc,preds
 
 class ChunkSampler(sampler.Sampler):
     """Samples elements sequentially from some offset.

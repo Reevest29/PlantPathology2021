@@ -38,11 +38,13 @@ class PlantPathologyDataset(Dataset):
 
 
         image = io.imread(img_name)
-        image_resized = resize(image, (4000, 2672))
+        image_resized = resize(image, (2672,4000))
         image_rescaled = rescale(image_resized, .10, multichannel=True)
         image_rescaled = image_rescaled.reshape(3,image_rescaled.shape[0],image_rescaled.shape[1])
 
         label = str(self.labels.iloc[idx, 1])
         num_label = self.mappings[label] # get numerical label
         sample = (image_rescaled,num_label)
+        if self.transform:
+            sample = self.transform(sample)
         return sample
